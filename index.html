@@ -439,14 +439,6 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.3);
         }
         
-        .event.hidden {
-            opacity: 0.3;
-            text-decoration: line-through;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-        
         .event-time {
             font-weight: 600;
             font-size: 11px;
@@ -463,15 +455,10 @@
             font-size: 12px;
         }
         
-        /* 修改：夜晚主題下活動按鈕文字為白色 - 與 index(6) 相同 */
-        .dark-theme .event:not(.hidden) .event-time,
-        .dark-theme .event:not(.hidden) .event-title {
+        /* 修改暗色主題下活動文字顏色為白色 - 與 index(6) 相同 */
+        .dark-theme .event .event-time,
+        .dark-theme .event .event-title {
             color: white !important;
-        }
-        
-        .dark-theme .event.hidden .event-time,
-        .dark-theme .event.hidden .event-title {
-            color: #777 !important;
         }
         
         .empty-cell {
@@ -736,7 +723,6 @@
             color: white;
         }
         
-        /* 保持與 index(6) 相同的暗色主題按鈕樣式 */
         .dark-theme .modal-btn {
             background-color: #4dabf7;
             color: white;
@@ -1096,57 +1082,34 @@
         // 全局變量
         let eventData = [];
         
-        // 地點顏色配置 - 改為與 index(6) 相同的結構，包含亮色和暗色主題
+        // 地點顏色配置
         const locationConfig = {
             "101鐘樓": {
-                // 亮色主題顏色
-                light: {
-                    color: "#4dabf7",
-                    bgColor: "#e7f5ff",
-                    borderColor: "#4dabf7",
-                    hiddenColor: "#f0f8ff",
-                    hiddenBorder: "#a5d8ff"
-                },
-                // 暗色主題顏色
-                dark: {
-                    color: "#4dabf7",
-                    bgColor: "#1a365d",
-                    borderColor: "#4dabf7",
-                    hiddenColor: "#0f2b4d",
-                    hiddenBorder: "#a5d8ff"
-                }
+                color: "#4dabf7",
+                bgColor: "#e7f5ff",
+                borderColor: "#4dabf7",
+                hiddenColor: "#f0f8ff",
+                hiddenBorder: "#a5d8ff",
+                darkBgColor: "#1a365d",
+                darkHiddenBgColor: "#0f2b4d"
             },
             "歪常研究院": {
-                light: {
-                    color: "#da77f2",
-                    bgColor: "#f8f0fc",
-                    borderColor: "#da77f2",
-                    hiddenColor: "#fdf2ff",
-                    hiddenBorder: "#e599f7"
-                },
-                dark: {
-                    color: "#da77f2",
-                    bgColor: "#3a1a4a",
-                    borderColor: "#da77f2",
-                    hiddenColor: "#2a0f3a",
-                    hiddenBorder: "#e599f7"
-                }
+                color: "#da77f2",
+                bgColor: "#f8f0fc",
+                borderColor: "#da77f2",
+                hiddenColor: "#fdf2ff",
+                hiddenBorder: "#e599f7",
+                darkBgColor: "#3a1a4a",
+                darkHiddenBgColor: "#2a0f3a"
             },
             "小怪寶家長會": {
-                light: {
-                    color: "#3a8c4a",
-                    bgColor: "#e6f7e9",
-                    borderColor: "#3a8c4a",
-                    hiddenColor: "#f0f9f2",
-                    hiddenBorder: "#a3d9b1"
-                },
-                dark: {
-                    color: "#3a8c4a",
-                    bgColor: "#1a3a1a",
-                    borderColor: "#3a8c4a",
-                    hiddenColor: "#0f2a0f",
-                    hiddenBorder: "#a3d9b1"
-                }
+                color: "#3a8c4a",
+                bgColor: "#e6f7e9",
+                borderColor: "#3a8c4a",
+                hiddenColor: "#f0f9f2",
+                hiddenBorder: "#a3d9b1",
+                darkBgColor: "#1a3a1a",
+                darkHiddenBgColor: "#0f2a0f"
             }
         };
 
@@ -1566,7 +1529,7 @@
             modal.classList.add('active');
         }
         
-        // 生成篩選按鈕 - 修正為與 index(6) 相同的邏輯
+        // 生成篩選按鈕 - 恢復 index(5) 原來的邏輯
         function generateFilterButtons() {
             const filtersContainer = document.getElementById('filters');
             
@@ -1576,17 +1539,26 @@
             
             Object.keys(locationConfig).forEach(location => {
                 const isHidden = hiddenLocations.has(location);
-                const isDarkTheme = document.body.classList.contains('dark-theme');
-                const config = isDarkTheme ? locationConfig[location].dark : locationConfig[location].light;
+                const config = locationConfig[location];
                 
                 const button = document.createElement('button');
-                button.className = `filter-btn ${isHidden ? 'hidden' : ''}`;
+                button.className = 'filter-btn';
                 button.textContent = location;
                 
+                const isDarkTheme = document.body.classList.contains('dark-theme');
+                
                 // 使用對應主題的顏色
-                button.style.backgroundColor = isHidden ? config.hiddenColor : config.bgColor;
-                button.style.color = config.color; // 文字顏色保持主題顏色
-                button.style.border = `2px solid ${config.borderColor}`;
+                if (isHidden) {
+                    // 隱藏狀態的按鈕
+                    button.style.backgroundColor = isDarkTheme ? config.darkHiddenBgColor : config.hiddenColor;
+                    button.style.color = '#adb5bd';
+                    button.style.border = `2px solid ${config.hiddenBorder}`;
+                } else {
+                    // 顯示狀態的按鈕
+                    button.style.backgroundColor = isDarkTheme ? config.darkBgColor : config.bgColor;
+                    button.style.color = config.color;
+                    button.style.border = `2px solid ${config.borderColor}`;
+                }
                 
                 button.addEventListener('click', () => toggleLocation(location));
                 
@@ -1607,7 +1579,7 @@
             updateStatusBar();
         }
         
-        // 更新狀態欄 - 保持與 index(6) 相同的邏輯
+        // 更新狀態欄
         function updateStatusBar() {
             const statusBar = document.getElementById('statusBar');
             const statusText = statusBar.querySelector('div:first-child');
@@ -1645,7 +1617,7 @@
             }
         }
         
-        // 生成日曆 - 修改為與 index(6) 相同的邏輯
+        // 生成日曆 - 恢復 index(5) 原來的邏輯：直接隱藏活動，而不是打刪節號
         function generateCalendar() {
             const calendarGrid = document.getElementById('calendarGrid');
             const noEventsMessage = document.getElementById('noEvents');
@@ -1696,34 +1668,25 @@
                 dayCell.appendChild(dayNumber);
                 
                 const dayEvents = getEventsForDate(day.fullDate);
-                
+                // 篩選出未隱藏的事件
+                const visibleDayEvents = dayEvents.filter(event => !hiddenLocations.has(event.location));
                 let hasVisibleDayEvents = false;
                 
-                if (dayEvents.length > 0) {
-                    dayEvents.forEach(event => {
-                        const isHidden = hiddenLocations.has(event.location);
-                        
-                        if (!isHidden) {
-                            hasVisibleEvents = true;
-                            hasVisibleDayEvents = true;
-                        }
+                // 只顯示未隱藏的事件
+                if (visibleDayEvents.length > 0) {
+                    visibleDayEvents.forEach(event => {
+                        hasVisibleEvents = true;
+                        hasVisibleDayEvents = true;
                         
                         const eventDiv = document.createElement('div');
-                        eventDiv.className = `event ${isHidden ? 'hidden' : ''}`;
+                        eventDiv.className = 'event';
                         
+                        const config = locationConfig[event.location];
                         const isDarkTheme = document.body.classList.contains('dark-theme');
-                        const config = isDarkTheme ? locationConfig[event.location].dark : locationConfig[event.location].light;
                         
                         // 使用對應主題的顏色
-                        eventDiv.style.backgroundColor = isHidden ? config.hiddenColor : config.bgColor;
+                        eventDiv.style.backgroundColor = isDarkTheme ? config.darkBgColor : config.bgColor;
                         eventDiv.style.borderLeftColor = config.borderColor;
-                        
-                        // 文字顏色處理
-                        if (isDarkTheme) {
-                            eventDiv.style.color = isHidden ? '#777' : '#fff';
-                        } else {
-                            eventDiv.style.color = isHidden ? '#adb5bd' : '#333';
-                        }
                         
                         const isPassed = isDatePassed(event.date, event.time);
                         if (isPassed) {
@@ -1732,52 +1695,35 @@
                         
                         const timeSpan = document.createElement('span');
                         timeSpan.className = 'event-time';
-                        
-                        if (event.time && event.time.trim() !== "") {
-                            timeSpan.textContent = event.time.substring(0, 5);
-                        } else {
-                            timeSpan.textContent = "";
-                        }
+                        timeSpan.textContent = event.time && event.time.trim() !== "" ? 
+                            event.time.substring(0, 5) : "";
                         
                         const titleSpan = document.createElement('span');
                         titleSpan.className = 'event-title';
                         titleSpan.textContent = event.script;
                         
-                        // 確保文字顏色正確
-                        if (isDarkTheme) {
-                            if (!isHidden) {
-                                timeSpan.style.color = '#fff';
-                                titleSpan.style.color = '#fff';
-                            } else {
-                                timeSpan.style.color = '#777';
-                                titleSpan.style.color = '#777';
-                            }
-                        }
-                        
                         eventDiv.appendChild(timeSpan);
                         eventDiv.appendChild(titleSpan);
                         
-                        if (!isHidden) {
-                            eventDiv.addEventListener('mouseenter', (e) => {
-                                showTooltip(e, event);
-                            });
-                            
-                            eventDiv.addEventListener('mouseleave', removeTooltip);
-                        }
+                        // 添加懸停和點擊事件
+                        eventDiv.addEventListener('mouseenter', (e) => {
+                            showTooltip(e, event);
+                        });
                         
-                        if (!isHidden) {
-                            eventDiv.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                showEventModal(event, day);
-                            });
-                        }
+                        eventDiv.addEventListener('mouseleave', removeTooltip);
+                        
+                        eventDiv.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            showEventModal(event, day);
+                        });
                         
                         dayCell.appendChild(eventDiv);
                     });
                 }
                 
-                if (!hasVisibleDayEvents && dayEvents.length === 0) {
+                // 如果該天沒有任何可見事件，顯示"暫無活動"
+                if (!hasVisibleDayEvents) {
                     const noEvent = document.createElement('div');
                     noEvent.className = 'event';
                     noEvent.textContent = "暫無活動";
@@ -1797,13 +1743,11 @@
                 calendarGrid.appendChild(dayCell);
             });
             
+            // 更新無活動訊息
             if (!hasVisibleEvents && hiddenLocations.size > 0) {
                 noEventsMessage.style.display = 'block';
-                if (hiddenLocations.size === 3) {
-                    noEventsMessage.textContent = '所有地點活動皆已隱藏';
-                } else {
-                    noEventsMessage.textContent = '目前選擇的地點沒有活動安排';
-                }
+                noEventsMessage.textContent = hiddenLocations.size === 3 ? 
+                    '所有地點活動皆已隱藏' : '目前選擇的地點沒有活動安排';
             } else {
                 noEventsMessage.style.display = 'none';
             }
