@@ -710,7 +710,6 @@
             <div class="header-controls">
                 <button class="btn-ctrl active" id="gridBtn">🖥️ 網格模式</button>
                 <button class="btn-ctrl" id="listBtn">📱 清單模式</button>
-                <button class="btn-ctrl" id="refreshBtn">🔄 重新整理</button>
                 <button class="btn-ctrl" id="themeToggle">☀️ 切換亮色主題</button>
             </div>
         </header>
@@ -984,7 +983,7 @@
             return false;
         }
 
-        // 主題切換函數 - 使用CSS變數，不需要重新渲染
+        // 主題切換函數
         function toggleTheme() {
             isDarkTheme = !isDarkTheme;
             
@@ -1058,7 +1057,7 @@
         }
 
         // 載入事件數據（離線版本）
-        function load(force = false) {
+        function load() {
             try {
                 // 轉換數據格式以符合 (16) 的結構
                 events = eventData.map(e => ({
@@ -1376,8 +1375,6 @@
             
             render();
         };
-        
-        document.getElementById('refreshBtn').onclick = () => load(true);
         
         document.getElementById('searchInput').oninput = (e) => { 
             query = e.target.value.trim(); 
